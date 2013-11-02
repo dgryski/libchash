@@ -3,7 +3,6 @@
 
 #include "chash.h"
 
-
 int main()
 {
 
@@ -14,10 +13,6 @@ int main()
 
     for (int i = 0; i < 5; i++) {
 	servers[i] = 0;
-    }
-
-    for (int i = 0; i < 5; i++) {
-	keys[i] = strdup(keys[i]);
     }
 
     struct chash_t *chash = chash_create(keys, 5, 160);

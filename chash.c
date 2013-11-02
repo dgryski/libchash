@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 
 #include "chash.h"
 
@@ -79,7 +80,7 @@ struct chash_t *chash_create(char **keys, int nkeys, int replicas)
     char buffer[256];
 
     for (int k = 0; k < nkeys; k++) {
-	klist[k] = keys[k];
+	klist[k] = strdup(keys[k]);
 	for (int r = 0; r < replicas; r++) {
 	    blist[bidx].key = keys[k];
 	    int len = snprintf(buffer, sizeof(buffer), "%d%s", r, keys[k]);
