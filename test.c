@@ -28,7 +28,7 @@ int main()
     }
 
     for (int i = 0; i < 5; i++) {
-	printf("servers%d=%d\n", i + 1, servers[i]);
+	printf("server%d=%d\n", i + 1, servers[i]);
     }
 
     chash_free(chash);
