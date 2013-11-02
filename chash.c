@@ -38,16 +38,15 @@ static int cmpbucket(const void *a, const void *b)
 
 
 /* from leveldb, a murmur-lite */
-static uint32_t leveldb_bloom_hash(char *b, size_t len)
+static uint32_t leveldb_bloom_hash(unsigned char *b, size_t len)
 {
 
-    const uint seed = 0xbc9f1d34;
-    const uint m = 0xc6a4a793;
+    const unsigned int seed = 0xbc9f1d34;
+    const unsigned int m = 0xc6a4a793;
 
-    int h = seed ^ len * m;
+    uint32_t h = seed ^ len * m;
     while (len >= 4) {
-	/* TODO(dgryski): fix endianness */
-	h += *(uint32_t *) b;
+	h += b[0] | (b[1] << 8) | (b[2] << 16) | (b[3] << 24);
 	h *= m;
 	h ^= h >> 16;
 	b += 4;
@@ -85,7 +84,7 @@ struct chash_t *chash_create(char **keys, int nkeys, int replicas)
 	    blist[bidx].key = keys[k];
 	    int len = snprintf(buffer, sizeof(buffer), "%d%s", r, keys[k]);
 	    /* TODO(dgryski): complain if keys[k] is too large */
-	    blist[bidx].point = leveldb_bloom_hash(buffer, len);
+	    blist[bidx].point = leveldb_bloom_hash((unsigned char *)buffer, len);
 	    bidx++;
 	}
     }
@@ -107,7 +106,7 @@ char *chash_lookup(struct chash_t *chash, char *key, int len)
     struct bucket_t *b = chash->blist;
     struct bucket_t *end = chash->blist + chash->nbuckets;
 
-    int point = leveldb_bloom_hash(key, len);
+    int point = leveldb_bloom_hash((unsigned char *)key, len);
 
     /* linear search, we expect at most a couple hundred entries */
     /* branch-prediction will make this fast */
