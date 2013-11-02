@@ -21,6 +21,7 @@ int main()
 
     while (fgets(line, sizeof(line), stdin)) {
 	int l = strlen(line);
+	line[l - 1] = 0;
 	char *k = chash_lookup(chash, line, l - 1);
 	int b = k[6] - '1';
 	servers[b]++;
