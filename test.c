@@ -6,7 +6,7 @@
 int main()
 {
 
-    char *keys[] =
+    const char *keys[] =
 	{ "server1", "server2", "server3", "server4", "server5" };
 
     int expected[] = {
@@ -19,7 +19,7 @@ int main()
 
     int servers[5];
     int i, l, b;
-    char *k;
+    const char *k;
     struct chash_t *chash;
     char line[100];
 

@@ -9,7 +9,7 @@
 #include "chash.h"
 
 struct bucket_t {
-    char *key;
+    const char *key;
     uint32_t point;
 } bucket_t;
 
@@ -66,7 +66,7 @@ static uint32_t leveldb_bloom_hash(unsigned char *b, size_t len)
     return h;
 }
 
-struct chash_t *chash_create(char **keys, size_t nkeys, int replicas)
+struct chash_t *chash_create(const char **keys, size_t nkeys, int replicas)
 {
 
     struct chash_t *chash;
@@ -102,7 +102,7 @@ struct chash_t *chash_create(char **keys, size_t nkeys, int replicas)
     return chash;
 }
 
-char *chash_lookup(struct chash_t *chash, char *key, size_t len)
+const char *chash_lookup(struct chash_t *chash, const char *key, size_t len)
 {
 
     struct bucket_t *b = chash->blist;
@@ -120,7 +120,7 @@ char *chash_lookup(struct chash_t *chash, char *key, size_t len)
 	return chash->blist[0].key;
     }
 
-    return b->key;
+    return (const char *) b->key;
 }
 
 void chash_free(struct chash_t *chash)
