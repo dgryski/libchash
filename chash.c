@@ -10,7 +10,7 @@
 
 struct bucket_t {
     char *key;
-    unsigned int point;
+    uint32_t point;
 } bucket_t;
 
 struct chash_t {
@@ -41,8 +41,8 @@ static int cmpbucket(const void *a, const void *b)
 static uint32_t leveldb_bloom_hash(unsigned char *b, size_t len)
 {
 
-    const unsigned int seed = 0xbc9f1d34;
-    const unsigned int m = 0xc6a4a793;
+    const uint32_t seed = 0xbc9f1d34;
+    const uint32_t m = 0xc6a4a793;
 
     uint32_t h = seed ^ len * m;
     while (len >= 4) {
@@ -106,7 +106,7 @@ char *chash_lookup(struct chash_t *chash, char *key, int len)
     struct bucket_t *b = chash->blist;
     struct bucket_t *end = chash->blist + chash->nbuckets;
 
-    int point = leveldb_bloom_hash((unsigned char *)key, len);
+    uint32_t point = leveldb_bloom_hash((unsigned char *) key, len);
 
     /* linear search, we expect at most a couple hundred entries */
     /* branch-prediction will make this fast */
