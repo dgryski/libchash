@@ -75,14 +75,15 @@ struct chash_t *chash_create(char **keys, int nkeys, int replicas)
 	(struct bucket_t *) malloc(sizeof(bucket_t) * nkeys * replicas);
     char **klist = (char **) malloc(sizeof(char *) * nkeys);
     int bidx = 0;
+    int k, r, len;
 
     char buffer[256];
 
-    for (int k = 0; k < nkeys; k++) {
+    for (k = 0; k < nkeys; k++) {
 	klist[k] = strdup(keys[k]);
-	for (int r = 0; r < replicas; r++) {
+	for (r = 0; r < replicas; r++) {
 	    blist[bidx].key = keys[k];
-	    int len = snprintf(buffer, sizeof(buffer), "%d%s", r, keys[k]);
+	    len = snprintf(buffer, sizeof(buffer), "%d%s", r, keys[k]);
 	    /* TODO(dgryski): complain if keys[k] is too large */
 	    blist[bidx].point = leveldb_bloom_hash((unsigned char *)buffer, len);
 	    bidx++;
@@ -123,7 +124,9 @@ char *chash_lookup(struct chash_t *chash, char *key, int len)
 
 void chash_free(struct chash_t *chash)
 {
-    for (int i = 0; i < chash->nkeys; i++) {
+    int i;
+
+    for (i = 0; i < chash->nkeys; i++) {
 	free(chash->keys[i]);
     }
     free(chash->keys);
