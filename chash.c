@@ -17,7 +17,7 @@ struct chash_t {
     struct bucket_t *blist;
     int nbuckets;
     char **keys;
-    int nkeys;
+    size_t nkeys;
 } chash_t;
 
 static int cmpbucket(const void *a, const void *b)
@@ -66,7 +66,7 @@ static uint32_t leveldb_bloom_hash(unsigned char *b, size_t len)
     return h;
 }
 
-struct chash_t *chash_create(char **keys, int nkeys, int replicas)
+struct chash_t *chash_create(char **keys, size_t nkeys, int replicas)
 {
 
     struct chash_t *chash;
@@ -75,7 +75,8 @@ struct chash_t *chash_create(char **keys, int nkeys, int replicas)
 	(struct bucket_t *) malloc(sizeof(bucket_t) * nkeys * replicas);
     char **klist = (char **) malloc(sizeof(char *) * nkeys);
     int bidx = 0;
-    int k, r, len;
+    int r;
+    size_t k, len;
 
     char buffer[256];
 
@@ -101,7 +102,7 @@ struct chash_t *chash_create(char **keys, int nkeys, int replicas)
     return chash;
 }
 
-char *chash_lookup(struct chash_t *chash, char *key, int len)
+char *chash_lookup(struct chash_t *chash, char *key, size_t len)
 {
 
     struct bucket_t *b = chash->blist;
@@ -124,7 +125,7 @@ char *chash_lookup(struct chash_t *chash, char *key, int len)
 
 void chash_free(struct chash_t *chash)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < chash->nkeys; i++) {
 	free(chash->keys[i]);
