@@ -66,7 +66,7 @@ static uint32_t leveldb_bloom_hash(unsigned char *b, size_t len)
     return h;
 }
 
-struct chash_t *chash_create(const char **keys, size_t nkeys, int replicas)
+struct chash_t *chash_create(const char **keys, size_t nkeys, size_t replicas)
 {
 
     struct chash_t *chash;
@@ -75,8 +75,7 @@ struct chash_t *chash_create(const char **keys, size_t nkeys, int replicas)
 	(struct bucket_t *) malloc(sizeof(bucket_t) * nkeys * replicas);
     char **klist = (char **) malloc(sizeof(char *) * nkeys);
     int bidx = 0;
-    int r;
-    size_t k, len;
+    size_t k, r, len;
 
     char buffer[256];
 
