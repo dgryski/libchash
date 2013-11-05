@@ -15,7 +15,7 @@ struct bucket_t {
 
 struct chash_t {
     struct bucket_t *blist;
-    int nbuckets;
+    size_t nbuckets;
     char **keys;
     size_t nkeys;
 } chash_t;
@@ -74,8 +74,7 @@ struct chash_t *chash_create(const char **keys, size_t nkeys, size_t replicas)
     struct bucket_t *blist =
 	(struct bucket_t *) malloc(sizeof(bucket_t) * nkeys * replicas);
     char **klist = (char **) malloc(sizeof(char *) * nkeys);
-    int bidx = 0;
-    size_t k, r, len;
+    size_t k, r, len, bidx = 0;
 
     char buffer[256];
 
