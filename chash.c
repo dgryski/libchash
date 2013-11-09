@@ -83,7 +83,9 @@ struct chash_t *chash_create(const char **node_names, size_t num_names,
 	for (r = 0; r < replicas; r++) {
 	    blist[bidx].node_name = node_names[n];
 	    len = snprintf(buffer, sizeof(buffer), "%u%s", r, node_names[n]);
-	    /* TODO(dgryski): complain if node_names[n] is too large */
+	    if (len >= 255) {
+		fprintf(stderr, "Node name truncated to: %s\n", buffer);
+	    }
 	    blist[bidx].point =
 		leveldb_bloom_hash((unsigned char *) buffer, len);
 	    bidx++;
