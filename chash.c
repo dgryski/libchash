@@ -9,15 +9,15 @@
 #include "chash.h"
 
 struct bucket_t {
-    const char *key;
+    const char *node_name;
     uint32_t point;
 } bucket_t;
 
 struct chash_t {
     struct bucket_t *blist;
     size_t nbuckets;
-    char **keys;
-    size_t nkeys;
+    char **node_names;
+    size_t num_names;
 } chash_t;
 
 static int cmpbucket(const void *a, const void *b)
@@ -65,24 +65,25 @@ static uint32_t leveldb_bloom_hash(unsigned char *b, size_t len)
     return h;
 }
 
-struct chash_t *chash_create(const char **keys, size_t nkeys, size_t replicas)
+struct chash_t *chash_create(const char **node_names, size_t num_names,
+			     size_t replicas)
 {
 
     struct chash_t *chash;
 
     struct bucket_t *blist =
-	(struct bucket_t *) malloc(sizeof(bucket_t) * nkeys * replicas);
-    char **klist = (char **) malloc(sizeof(char *) * nkeys);
-    size_t k, r, len, bidx = 0;
+	(struct bucket_t *) malloc(sizeof(bucket_t) * num_names * replicas);
+    char **nlist = (char **) malloc(sizeof(char *) * num_names);
+    size_t n, r, len, bidx = 0;
 
     char buffer[256];
 
-    for (k = 0; k < nkeys; k++) {
-	klist[k] = strdup(keys[k]);
+    for (n = 0; n < num_names; n++) {
+	nlist[n] = strdup(node_names[n]);
 	for (r = 0; r < replicas; r++) {
-	    blist[bidx].key = keys[k];
-	    len = snprintf(buffer, sizeof(buffer), "%u%s", r, keys[k]);
-	    /* TODO(dgryski): complain if keys[k] is too large */
+	    blist[bidx].node_name = node_names[n];
+	    len = snprintf(buffer, sizeof(buffer), "%u%s", r, node_names[n]);
+	    /* TODO(dgryski): complain if node_names[n] is too large */
 	    blist[bidx].point =
 		leveldb_bloom_hash((unsigned char *) buffer, len);
 	    bidx++;
@@ -94,8 +95,8 @@ struct chash_t *chash_create(const char **keys, size_t nkeys, size_t replicas)
     chash = malloc(sizeof(chash_t));
     chash->blist = blist;
     chash->nbuckets = bidx;
-    chash->keys = klist;
-    chash->nkeys = nkeys;
+    chash->node_names = nlist;
+    chash->num_names = num_names;
 
     return chash;
 }
@@ -115,20 +116,20 @@ const char *chash_lookup(struct chash_t *chash, const char *key, size_t len)
     }
 
     if (b == end) {
-	return chash->blist[0].key;
+	return chash->blist[0].node_name;
     }
 
-    return (const char *) b->key;
+    return (const char *) b->node_name;
 }
 
 void chash_free(struct chash_t *chash)
 {
     size_t i;
 
-    for (i = 0; i < chash->nkeys; i++) {
-	free(chash->keys[i]);
+    for (i = 0; i < chash->num_names; i++) {
+	free(chash->node_names[i]);
     }
-    free(chash->keys);
+    free(chash->node_names);
     free(chash->blist);
     free(chash);
 }
