@@ -36,7 +36,6 @@ static int cmpbucket(const void *a, const void *b)
     return 0;
 }
 
-
 /* from leveldb, a murmur-lite */
 static uint32_t leveldb_bloom_hash(unsigned char *b, size_t len)
 {
@@ -84,7 +83,8 @@ struct chash_t *chash_create(const char **keys, size_t nkeys, size_t replicas)
 	    blist[bidx].key = keys[k];
 	    len = snprintf(buffer, sizeof(buffer), "%u%s", r, keys[k]);
 	    /* TODO(dgryski): complain if keys[k] is too large */
-	    blist[bidx].point = leveldb_bloom_hash((unsigned char *)buffer, len);
+	    blist[bidx].point =
+		leveldb_bloom_hash((unsigned char *) buffer, len);
 	    bidx++;
 	}
     }
