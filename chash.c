@@ -81,8 +81,8 @@ struct chash_t *chash_create(const char **node_names, size_t num_names,
     for (n = 0; n < num_names; n++) {
 	nlist[n] = strdup(node_names[n]);
 	for (r = 0; r < replicas; r++) {
-	    blist[bidx].node_name = node_names[n];
-	    len = snprintf(buffer, sizeof(buffer), "%u%s", r, node_names[n]);
+	    blist[bidx].node_name = nlist[n];
+	    len = snprintf(buffer, sizeof(buffer), "%u%s", r, nlist[n]);
 	    if (len >= 255) {
 		fprintf(stderr, "Node name truncated to: %s\n", buffer);
 	    }
