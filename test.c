@@ -31,7 +31,7 @@ int main()
 
     for (i = 0; i < 100000; i++) {
 	l = snprintf(line, sizeof(line), "foo%d\n", i);
-	k = chash_lookup(chash, line, l);
+	chash_lookup(chash, line, l, &k);
 	b = k[6] - '1';
 	servers[b]++;
     }

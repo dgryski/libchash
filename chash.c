@@ -39,7 +39,6 @@ static int cmpbucket(const void *a, const void *b)
 /* from leveldb, a murmur-lite */
 static uint32_t leveldb_bloom_hash(unsigned char *b, size_t len)
 {
-
     const uint32_t seed = 0xbc9f1d34;
     const uint32_t m = 0xc6a4a793;
 
@@ -68,7 +67,6 @@ static uint32_t leveldb_bloom_hash(unsigned char *b, size_t len)
 struct chash_t *chash_create(const char **node_names, size_t num_names,
 			     size_t replicas)
 {
-
     struct chash_t *chash;
 
     struct bucket_t *blist =
@@ -103,9 +101,9 @@ struct chash_t *chash_create(const char **node_names, size_t num_names,
     return chash;
 }
 
-const char *chash_lookup(struct chash_t *chash, const char *key, size_t len)
+void chash_lookup(struct chash_t *chash, const char *key, size_t len,
+		  const char **node_name)
 {
-
     struct bucket_t *b = chash->blist;
     struct bucket_t *end = chash->blist + chash->nbuckets;
 
@@ -118,10 +116,10 @@ const char *chash_lookup(struct chash_t *chash, const char *key, size_t len)
     }
 
     if (b == end) {
-	return chash->blist[0].node_name;
+	*node_name = chash->blist[0].node_name;
+    } else {
+	*node_name = b->node_name;
     }
-
-    return (const char *) b->node_name;
 }
 
 void chash_free(struct chash_t *chash)
