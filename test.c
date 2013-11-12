@@ -8,6 +8,7 @@ int main()
 
     const char *keys[] =
 	{ "server1", "server2", "server3", "server4", "server5" };
+    size_t lens[] = { 8, 8, 8, 8, 8 };
 
     int expected[] = {
 	19236,
@@ -27,7 +28,7 @@ int main()
 	servers[i] = 0;
     }
 
-    chash = chash_create(keys, 5, 160);
+    chash = chash_create(keys, lens, 5, 160);
 
     for (i = 0; i < 100000; i++) {
 	l = snprintf(line, sizeof(line), "foo%d\n", i);

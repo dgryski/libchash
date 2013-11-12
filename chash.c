@@ -17,6 +17,7 @@ struct chash_t {
     struct bucket_t *blist;
     size_t nbuckets;
     char **node_names;
+    size_t *name_lens;
     size_t num_names;
 } chash_t;
 
@@ -64,20 +65,23 @@ static uint32_t leveldb_bloom_hash(unsigned char *b, size_t len)
     return h;
 }
 
-struct chash_t *chash_create(const char **node_names, size_t num_names,
-			     size_t replicas)
+struct chash_t *chash_create(const char **node_names, size_t * name_lens,
+			     size_t num_names, size_t replicas)
 {
     struct chash_t *chash;
 
     struct bucket_t *blist =
 	(struct bucket_t *) malloc(sizeof(bucket_t) * num_names * replicas);
     char **nlist = (char **) malloc(sizeof(char *) * num_names);
+    size_t *lens = (size_t *) malloc(sizeof(size_t) * num_names);
     size_t n, r, len, bidx = 0;
 
     char buffer[256];
 
     for (n = 0; n < num_names; n++) {
-	nlist[n] = strdup(node_names[n]);
+	nlist[n] = (char *) malloc(sizeof(char) * name_lens[n]);
+	lens[n] = name_lens[n];
+	memcpy(nlist[n], node_names[n], lens[n]);
 	for (r = 0; r < replicas; r++) {
 	    blist[bidx].node_name = nlist[n];
 	    len = snprintf(buffer, sizeof(buffer), "%u%s", r, nlist[n]);
@@ -96,6 +100,7 @@ struct chash_t *chash_create(const char **node_names, size_t num_names,
     chash->blist = blist;
     chash->nbuckets = bidx;
     chash->node_names = nlist;
+    chash->name_lens = lens;
     chash->num_names = num_names;
 
     return chash;
@@ -130,6 +135,7 @@ void chash_free(struct chash_t *chash)
 	free(chash->node_names[i]);
     }
     free(chash->node_names);
+    free(chash->name_lens);
     free(chash->blist);
     free(chash);
 }
