@@ -10,6 +10,7 @@
 
 struct bucket_t {
     const char *node_name;
+    size_t name_len;
     uint32_t point;
 } bucket_t;
 
@@ -84,6 +85,7 @@ struct chash_t *chash_create(const char **node_names, size_t * name_lens,
 	memcpy(nlist[n], node_names[n], lens[n]);
 	for (r = 0; r < replicas; r++) {
 	    blist[bidx].node_name = nlist[n];
+	    blist[bidx].name_len = lens[n];
 	    len = snprintf(buffer, sizeof(buffer), "%u%s", r, nlist[n]);
 	    if (len >= 255) {
 		fprintf(stderr, "Node name truncated to: %s\n", buffer);
@@ -107,7 +109,7 @@ struct chash_t *chash_create(const char **node_names, size_t * name_lens,
 }
 
 void chash_lookup(struct chash_t *chash, const char *key, size_t len,
-		  const char **node_name)
+		  const char **node_name, size_t * name_len)
 {
     struct bucket_t *b = chash->blist;
     struct bucket_t *end = chash->blist + chash->nbuckets;
@@ -122,8 +124,10 @@ void chash_lookup(struct chash_t *chash, const char *key, size_t len,
 
     if (b == end) {
 	*node_name = chash->blist[0].node_name;
+	*name_len = chash->blist[0].name_len;
     } else {
 	*node_name = b->node_name;
+	*name_len = b->name_len;
     }
 }
 

@@ -21,6 +21,7 @@ int main()
     int servers[5];
     int i, l, b;
     const char *k;
+    size_t k_len;
     struct chash_t *chash;
     char line[100];
 
@@ -32,7 +33,10 @@ int main()
 
     for (i = 0; i < 100000; i++) {
 	l = snprintf(line, sizeof(line), "foo%d\n", i);
-	chash_lookup(chash, line, l, &k);
+	chash_lookup(chash, line, l, &k, &k_len);
+	if (k_len != 8) {
+	    printf("WARN: expected=8 got=%u\n", k_len);
+	}
 	b = k[6] - '1';
 	servers[b]++;
     }
