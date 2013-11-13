@@ -7,7 +7,7 @@ int main()
 {
     const char *keys[] =
 	{ "server1", "server2", "server3", "server4", "server5" };
-    size_t lens[] = { 8, 8, 8, 8, 8 };
+    size_t lens[5];
 
     int expected[] = {
 	19236,
@@ -26,6 +26,7 @@ int main()
     unsigned int warns = 0;
 
     for (i = 0; i < 5; i++) {
+	lens[i] = strlen(keys[i]);
 	servers[i] = 0;
     }
 
