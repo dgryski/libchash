@@ -5,7 +5,6 @@
 
 int main()
 {
-
     const char *keys[] =
 	{ "server1", "server2", "server3", "server4", "server5" };
     size_t lens[] = { 8, 8, 8, 8, 8 };
@@ -24,6 +23,7 @@ int main()
     size_t k_len;
     struct chash_t *chash;
     char line[100];
+    unsigned int warns = 0;
 
     for (i = 0; i < 5; i++) {
 	servers[i] = 0;
@@ -34,10 +34,10 @@ int main()
     for (i = 0; i < 100000; i++) {
 	l = snprintf(line, sizeof(line), "foo%d\n", i);
 	chash_lookup(chash, line, l, &k, &k_len);
-	if (k_len != 8) {
-	    printf("WARN: expected=8 got=%u\n", k_len);
-	}
 	b = k[6] - '1';
+	if ((k_len != lens[b]) && (warns++ < 10)) {
+	    printf("WARN: expected=%u got=%u\n", lens[b], k_len);
+	}
 	servers[b]++;
     }
 
