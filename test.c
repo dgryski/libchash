@@ -5,7 +5,7 @@
 
 int main()
 {
-    const char *keys[] =
+    const char *node_names[] =
 	{ "server1", "server2", "server3", "server4", "server5" };
     size_t lens[5];
 
@@ -18,28 +18,28 @@ int main()
     };
 
     int servers[5];
-    int i, l, b;
-    const char *k;
-    size_t k_len;
+    int i, l, n_idx;
+    const char *key;
+    size_t key_len;
     struct chash_t *chash;
     char line[100];
     unsigned int warns = 0;
 
     for (i = 0; i < 5; i++) {
-	lens[i] = strlen(keys[i]);
+	lens[i] = strlen(node_names[i]);
 	servers[i] = 0;
     }
 
-    chash = chash_create(keys, lens, 5, 160);
+    chash = chash_create(node_names, lens, 5, 160);
 
     for (i = 0; i < 100000; i++) {
 	l = snprintf(line, sizeof(line), "foo%d\n", i);
-	chash_lookup(chash, line, l, &k, &k_len);
-	b = k[6] - '1';
-	if ((k_len != lens[b]) && (warns++ < 10)) {
-	    printf("WARN: expected=%u got=%u\n", lens[b], k_len);
+	chash_lookup(chash, line, l, &key, &key_len);
+	n_idx = key[6] - '1';
+	if ((key_len != lens[n_idx]) && (warns++ < 10)) {
+	    printf("WARN: expected=%u got=%u\n", lens[n_idx], key_len);
 	}
-	servers[b]++;
+	servers[n_idx]++;
     }
 
     for (i = 0; i < 5; i++) {
