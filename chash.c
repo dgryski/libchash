@@ -75,7 +75,7 @@ struct chash_t *chash_create(const char **node_names, size_t * name_lens,
 	(struct bucket_t *) malloc(sizeof(bucket_t) * num_names * replicas);
     char **nlist = (char **) malloc(sizeof(char *) * num_names);
     size_t *lens = (size_t *) malloc(sizeof(size_t) * num_names);
-    size_t n, r, len, bidx = 0;
+    size_t n, r, len, len1, len2, bidx = 0;
 
     char buffer[256];
 
@@ -86,7 +86,15 @@ struct chash_t *chash_create(const char **node_names, size_t * name_lens,
 	for (r = 0; r < replicas; r++) {
 	    blist[bidx].node_name = nlist[n];
 	    blist[bidx].name_len = lens[n];
-	    len = snprintf(buffer, sizeof(buffer), "%u%s", r, nlist[n]);
+	    len1 = snprintf(buffer, sizeof(buffer), "%u", r);
+	    if ((sizeof(buffer) - len1) < name_lens[n]) {
+		len2 = sizeof(buffer) - len1;
+	    } else {
+		len2 = name_lens[n];
+	    }
+	    memcpy(buffer + len1, node_names[n], len2);
+	    len = len1 + len2;
+	    buffer[len] = '\0';
 	    if (len >= 255) {
 		fprintf(stderr, "Node name truncated to: %s\n", buffer);
 	    }
