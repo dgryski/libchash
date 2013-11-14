@@ -86,7 +86,7 @@ struct chash_t *chash_create(const char **node_names, size_t * name_lens,
 	for (r = 0; r < replicas; r++) {
 	    blist[bidx].node_name = nlist[n];
 	    blist[bidx].name_len = lens[n];
-	    len1 = snprintf(buffer, sizeof(buffer), "%u", r);
+	    len1 = snprintf(buffer, sizeof(buffer), "%lu", (unsigned long) r);
 	    if ((sizeof(buffer) - len1) < name_lens[n]) {
 		len2 = sizeof(buffer) - len1;
 	    } else {
