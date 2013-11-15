@@ -4,9 +4,9 @@ SO_OBJS=chash.o
 SO_NAME=libchash.so
 
 INCLUDES=-I.
-SRC=test.c
-OBJ=test.o
-OUT=test
+SRC=chash-test.c
+OBJ=chash-test.o
+OUT=chash-test
 
 CFLAGS=-Werror -Wall -Wextra -pedantic
 LDFLAGS=-L. -lchash

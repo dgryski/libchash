@@ -12,7 +12,7 @@ $*
 ################
 # Output files
 ################
-test
+chash-test
 *.o
 *.so
 *.so.*
