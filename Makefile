@@ -1,7 +1,20 @@
+UNAME := $(shell uname)
+
+ifeq ($(UNAME), Darwin)
+SHAREDFLAGS = -dynamiclib
+SHAREDEXT = dylib
+else
+SHAREDFLAGS = -shared
+SHAREDEXT = so
+endif
+
 LIB_SRC=chash.c
 LIB_OBJ=$(LIB_SRC:.c=.o)
 SO_OBJS=chash.o
-SO_NAME=libchash.so
+SO_NAME=libchash.$(SHAREDEXT)
+ifneq ($(UNAME), Darwin)
+    SHAREDFLAGS += -Wl,-soname,$(SO_NAME)
+endif
 
 INCLUDES=-I.
 SRC=chash-test.c
@@ -18,7 +31,7 @@ default: $(OUT)
 	$(CC) -c -fPIC $(CFLAGS) $< -o $@
 
 $(SO_NAME): $(LIB_OBJ)
-	$(CC) -shared -Wl,-soname,$(SO_NAME) -o $(SO_NAME).1.0 $(SO_OBJS)
+	$(CC) $(SHAREDFLAGS) -o $(SO_NAME).1.0 $(SO_OBJS)
 	ln -sf ./$(SO_NAME).1.0 ./$(SO_NAME).1
 	ln -sf ./$(SO_NAME).1.0 ./$(SO_NAME)
 
@@ -30,4 +43,4 @@ check: $(OUT)
 	LD_LIBRARY_PATH=. ./$(OUT)
 
 clean:
-	rm -f *.o *.a *.so  $(SO_NAME).* $(OUT)
+	rm -f *.o *.a *.$(SHAREDEXT)  $(SO_NAME).* $(OUT)
