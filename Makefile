@@ -9,12 +9,15 @@ SHAREDEXT = so
 endif
 
 LIB_SRC=chash.c
+LIB_HDR=chash.h
 LIB_OBJ=$(LIB_SRC:.c=.o)
 SO_OBJS=chash.o
 SO_NAME=libchash.$(SHAREDEXT)
 ifneq ($(UNAME), Darwin)
     SHAREDFLAGS += -Wl,-soname,$(SO_NAME)
 endif
+
+A_NAME=libchash.a
 
 INCLUDES=-I.
 SRC=chash-test.c
@@ -35,7 +38,10 @@ $(SO_NAME): $(LIB_OBJ)
 	ln -sf ./$(SO_NAME).1.0 ./$(SO_NAME).1
 	ln -sf ./$(SO_NAME).1.0 ./$(SO_NAME)
 
-$(OUT): $(SO_NAME)
+$(A_NAME): $(LIB_OBJ)
+	ar -r $(A_NAME) $(SO_OBJS)
+
+$(OUT): $(SO_NAME) $(A_NAME)
 	$(CC) -c $(INCLUDES) $(CFLAGS) $(SRC) -o $(OBJ)
 	$(CC) $(OBJ) $(LDFLAGS) -o $(OUT)
 
@@ -44,3 +50,12 @@ check: $(OUT)
 
 clean:
 	rm -f *.o *.a *.$(SHAREDEXT)  $(SO_NAME).* $(OUT)
+
+install:
+	@if [ "X$$LIBDIR" == "X" ]; then LIBDIR="/usr/local/lib"; fi; \
+	 if [ "X$$INCDIR" == "X" ]; then INCDIR="/usr/local/include"; fi; \
+	 echo "Installing libraries in $$LIBDIR"; \
+	 cp -pv $(A_NAME) $$LIBDIR/;\
+	 cp -Rv $(SO_NAME)* $$LIBDIR/;\
+	 echo "Installing headers in $$INCDIR"; \
+	 cp -pv $(LIB_HDR) $$INCDIR/;
