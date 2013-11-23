@@ -28,6 +28,15 @@ CFLAGS=-Werror -Wall -Wextra -pedantic
 LDFLAGS=-L. -lchash
 CC=gcc
 
+ifndef $(LIBDIR)
+LIBDIR=/usr/local/lib
+endif
+
+ifndef $(INCDIR)
+INCDIR=/usr/local/include
+endif
+
+
 default: $(OUT)
 
 .c.o:
@@ -52,10 +61,8 @@ clean:
 	rm -f *.o *.a *.$(SHAREDEXT)  $(SO_NAME).* $(OUT)
 
 install:
-	@if [ "X$$LIBDIR" == "X" ]; then LIBDIR="/usr/local/lib"; fi; \
-	 if [ "X$$INCDIR" == "X" ]; then INCDIR="/usr/local/include"; fi; \
-	 echo "Installing libraries in $$LIBDIR"; \
-	 cp -pv $(A_NAME) $$LIBDIR/;\
-	 cp -Rv $(SO_NAME)* $$LIBDIR/;\
-	 echo "Installing headers in $$INCDIR"; \
-	 cp -pv $(LIB_HDR) $$INCDIR/;
+	 @echo "Installing libraries in $(LIBDIR)"; \
+	 cp -pv $(A_NAME) $(LIBDIR)/;\
+	 cp -Rv $(SO_NAME)* $(LIBDIR)/;\
+	 echo "Installing headers in $(INCDIR)"; \
+	 cp -pv $(LIB_HDR) $(INCDIR)/;
