@@ -28,14 +28,13 @@ CFLAGS=-Werror -Wall -Wextra -pedantic
 LDFLAGS=-L. -lchash
 CC=gcc
 
-ifndef $(LIBDIR)
+ifeq ("$(LIBDIR)", "")
 LIBDIR=/usr/local/lib
 endif
 
-ifndef $(INCDIR)
+ifeq ("$(INCDIR)", "")
 INCDIR=/usr/local/include
 endif
-
 
 default: $(OUT)
 
