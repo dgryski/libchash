@@ -37,7 +37,9 @@ int main()
 	chash_lookup(chash, line, l, &key, &key_len);
 	n_idx = key[6] - '1';
 	if ((key_len != lens[n_idx]) && (warns++ < 10)) {
-	    printf("WARN: expected=%lu got=%lu\n", lens[n_idx], key_len);
+	    printf("WARN: expected=%lu got=%lu\n",
+		   (long unsigned int) lens[n_idx],
+		   (long unsigned int) key_len);
 	}
 	servers[n_idx]++;
     }
