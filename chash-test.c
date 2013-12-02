@@ -24,6 +24,7 @@ int main()
     struct chash_t *chash;
     char line[100];
     unsigned int warns = 0;
+    unsigned int fails = 0;
 
     for (i = 0; i < 5; i++) {
 	lens[i] = strlen(node_names[i]);
@@ -48,10 +49,11 @@ int main()
 	printf("server%d=%d\n", i + 1, servers[i]);
 	if (expected[i] != servers[i]) {
 	    printf("FAIL: expected=%d got=%d\n", expected[i], servers[i]);
+	    fails++;
 	}
     }
 
     chash_free(chash);
 
-    return 0;
+    return (!!warns || !!fails);
 }
