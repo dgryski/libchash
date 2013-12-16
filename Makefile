@@ -24,8 +24,7 @@ SRC=chash-test.c
 OBJ=chash-test.o
 OUT=chash-test
 
-CFLAGS=-Werror -Wall -Wextra -pedantic
-LDFLAGS=-L. -lchash
+CFLAGS += -Werror -Wall -Wextra -pedantic
 CC=gcc
 
 ifeq ("$(LIBDIR)", "")
@@ -51,7 +50,7 @@ $(A_NAME): $(LIB_OBJ)
 
 $(OUT): $(SO_NAME) $(A_NAME)
 	$(CC) -c $(INCLUDES) $(CFLAGS) $(SRC) -o $(OBJ)
-	$(CC) $(OBJ) $(LDFLAGS) -o $(OUT)
+	$(CC) $(OBJ) $(LDFLAGS) $(A_NAME) -o $(OUT)
 
 check: $(OUT)
 	LD_LIBRARY_PATH=. ./$(OUT)
