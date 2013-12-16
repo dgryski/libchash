@@ -119,24 +119,26 @@ struct chash_t *chash_create(const char **node_names, size_t * name_lens,
 void chash_lookup(struct chash_t *chash, const char *key, size_t len,
 		  const char **node_name, size_t * name_len)
 {
-    struct bucket_t *b = chash->blist;
-    struct bucket_t *end = chash->blist + chash->nbuckets;
-
     uint32_t point = leveldb_bloom_hash((unsigned char *) key, len);
 
-    /* linear search, we expect at most a couple hundred entries */
-    /* branch-prediction will make this fast */
-    while (b < end && b->point < point) {
-	b++;
+    uint32_t low = 0, high = chash->nbuckets;
+
+    /* binary search through blist */
+    while (low < high) {
+	uint32_t mid = low + (high - low) / 2;
+	if (chash->blist[mid].point > point) {
+	    high = mid;
+	} else {
+	    low = mid + 1;
+	}
     }
 
-    if (b == end) {
-	*node_name = chash->blist[0].node_name;
-	*name_len = chash->blist[0].name_len;
-    } else {
-	*node_name = b->node_name;
-	*name_len = b->name_len;
+    if (low >= chash->nbuckets) {
+	low = 0;
     }
+
+    *node_name = chash->blist[low].node_name;
+    *name_len = chash->blist[low].name_len;
 }
 
 void chash_free(struct chash_t *chash)
