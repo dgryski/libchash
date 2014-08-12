@@ -59,7 +59,7 @@ check: $(OUT)
 	LD_LIBRARY_PATH=. ./$(OUT)-dynamic
 
 clean:
-	rm -f *.o *.a *.$(SHAREDEXT)  $(SO_NAME).* $(OUT)
+	rm -f *.o *.a *.$(SHAREDEXT)  $(SO_NAME).* $(OUT)-static $(OUT)-dynamic
 
 install:
 	 @echo "Installing libraries in $(LIBDIR)"; \
