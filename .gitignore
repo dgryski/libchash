@@ -12,7 +12,8 @@ $*
 ################
 # Output files
 ################
-chash-test
+chash-test-static
+chash-test-dynamic
 *.o
 *.so
 *.so.*

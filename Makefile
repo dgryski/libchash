@@ -25,6 +25,7 @@ OBJ=chash-test.o
 OUT=chash-test
 
 CFLAGS += -Werror -Wall -Wextra -pedantic
+LDFLAGS += -L. -lchash
 CC=gcc
 
 ifeq ("$(LIBDIR)", "")
@@ -50,10 +51,12 @@ $(A_NAME): $(LIB_OBJ)
 
 $(OUT): $(SO_NAME) $(A_NAME)
 	$(CC) -c $(INCLUDES) $(CFLAGS) $(SRC) -o $(OBJ)
-	$(CC) $(OBJ) $(LDFLAGS) $(A_NAME) -o $(OUT)
+	$(CC) $(OBJ) $(A_NAME) -o $(OUT)-static
+	$(CC) $(OBJ) $(LDFLAGS) -o $(OUT)-dynamic
 
 check: $(OUT)
-	LD_LIBRARY_PATH=. ./$(OUT)
+	./$(OUT)-static
+	LD_LIBRARY_PATH=. ./$(OUT)-dynamic
 
 clean:
 	rm -f *.o *.a *.$(SHAREDEXT)  $(SO_NAME).* $(OUT)
