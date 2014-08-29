@@ -36,7 +36,7 @@ ifeq ("$(INCDIR)", "")
 INCDIR=/usr/local/include
 endif
 
-default: $(OUT)
+default: library
 
 .c.o:
 	$(CC) -c -fPIC $(CFLAGS) $< -o $@
@@ -49,7 +49,9 @@ $(SO_NAME): $(LIB_OBJ)
 $(A_NAME): $(LIB_OBJ)
 	ar -r $(A_NAME) $(SO_OBJS)
 
-$(OUT): $(SO_NAME) $(A_NAME)
+library: $(SO_NAME) $(A_NAME)
+
+$(OUT): library
 	$(CC) -c $(INCLUDES) $(CFLAGS) $(SRC) -o $(OBJ)
 	$(CC) $(OBJ) $(A_NAME) -o $(OUT)-static
 	$(CC) $(OBJ) $(LDFLAGS) -o $(OUT)-dynamic
