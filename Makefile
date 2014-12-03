@@ -28,12 +28,16 @@ CFLAGS += -Werror -Wall -Wextra -pedantic
 LDFLAGS += -L. -lchash
 CC=gcc
 
+ifeq ("$(PREFIX)", "")
+PREFIX=/usr/local
+endif
+
 ifeq ("$(LIBDIR)", "")
-LIBDIR=/usr/local/lib
+LIBDIR=$(PREFIX)/lib
 endif
 
 ifeq ("$(INCDIR)", "")
-INCDIR=/usr/local/include
+INCDIR=$(PREFIX)/include
 endif
 
 default: library
@@ -63,9 +67,11 @@ check: $(OUT)
 clean:
 	rm -f *.o *.a *.$(SHAREDEXT)  $(SO_NAME).* $(OUT)-static $(OUT)-dynamic
 
-install:
+install: library
 	 @echo "Installing libraries in $(LIBDIR)"; \
+	 mkdir -pv $(LIBDIR)/;\
 	 cp -pv $(A_NAME) $(LIBDIR)/;\
 	 cp -Rv $(SO_NAME)* $(LIBDIR)/;\
 	 echo "Installing headers in $(INCDIR)"; \
+	 mkdir -pv $(INCDIR)/;\
 	 cp -pv $(LIB_HDR) $(INCDIR)/;
