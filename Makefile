@@ -20,9 +20,9 @@ endif
 A_NAME=libchash.a
 
 INCLUDES=-I.
-SRC=chash-test.c
-OBJ=chash-test.o
-OUT=chash-test
+TEST_SRC=chash-test.c
+TEST_OBJ=chash-test.o
+TEST_EXE=chash-test
 
 CFLAGS += -Werror -Wall -Wextra -pedantic
 LDFLAGS += -L. -lchash
@@ -55,17 +55,18 @@ $(A_NAME): $(LIB_OBJ)
 
 library: $(SO_NAME) $(A_NAME)
 
-$(OUT): library
-	$(CC) -c $(INCLUDES) $(CFLAGS) $(SRC) -o $(OBJ)
-	$(CC) $(OBJ) $(A_NAME) -o $(OUT)-static
-	$(CC) $(OBJ) $(LDFLAGS) -o $(OUT)-dynamic
+$(TEST_EXE): library
+	$(CC) -c $(INCLUDES) $(CFLAGS) $(TEST_SRC) -o $(TEST_OBJ)
+	$(CC) $(TEST_OBJ) $(A_NAME) -o $(TEST_EXE)-static
+	$(CC) $(TEST_OBJ) $(LDFLAGS) -o $(TEST_EXE)-dynamic
 
-check: $(OUT)
-	./$(OUT)-static
-	LD_LIBRARY_PATH=. ./$(OUT)-dynamic
+check: $(TEST_EXE)
+	./$(TEST_EXE)-static
+	LD_LIBRARY_PATH=. ./$(TEST_EXE)-dynamic
 
 clean:
-	rm -f *.o *.a *.$(SHAREDEXT)  $(SO_NAME).* $(OUT)-static $(OUT)-dynamic
+	rm -f *.o *.a *.$(SHAREDEXT)  $(SO_NAME).* \
+		$(TEST_EXE)-static $(TEST_EXE)-dynamic
 
 install: library
 	 @echo "Installing libraries in $(LIBDIR)"; \
