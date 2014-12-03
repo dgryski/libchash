@@ -64,6 +64,9 @@ check: $(TEST_EXE)
 	./$(TEST_EXE)-static
 	LD_LIBRARY_PATH=. ./$(TEST_EXE)-dynamic
 
+valgrind: $(TEST_EXE)
+	valgrind ./$(TEST_EXE)-static
+
 clean:
 	rm -f *.o *.a *.$(SHAREDEXT)  $(SO_NAME).* \
 		$(TEST_EXE)-static $(TEST_EXE)-dynamic
