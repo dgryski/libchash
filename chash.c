@@ -9,8 +9,7 @@
 #include "chash.h"
 
 struct bucket_t {
-    const char *node_name;
-    size_t name_len;
+    uint32_t node_idx;
     uint32_t point;
 } bucket_t;
 
@@ -84,8 +83,7 @@ struct chash_t *chash_create(const char **node_names, size_t * name_lens,
 	lens[n] = name_lens[n];
 	memcpy(nlist[n], node_names[n], lens[n]);
 	for (r = 0; r < replicas; r++) {
-	    blist[bidx].node_name = nlist[n];
-	    blist[bidx].name_len = lens[n];
+	    blist[bidx].node_idx = n;
 	    len1 = snprintf(buffer, sizeof(buffer), "%lu", (unsigned long) r);
 	    if ((sizeof(buffer) - len1) < name_lens[n]) {
 		len2 = sizeof(buffer) - len1;
@@ -122,6 +120,7 @@ void chash_lookup(struct chash_t *chash, const char *key, size_t len,
     uint32_t point = leveldb_bloom_hash((unsigned char *) key, len);
 
     uint32_t low = 0, high = chash->nbuckets;
+    uint32_t node_idx;
 
     /* binary search through blist */
     while (low < high) {
@@ -137,8 +136,10 @@ void chash_lookup(struct chash_t *chash, const char *key, size_t len,
 	low = 0;
     }
 
-    *node_name = chash->blist[low].node_name;
-    *name_len = chash->blist[low].name_len;
+
+    node_idx = chash->blist[low].node_idx;
+    *node_name = chash->node_names[node_idx];
+    *name_len = chash->name_lens[node_idx];
 }
 
 void chash_free(struct chash_t *chash)
