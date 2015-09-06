@@ -1,6 +1,6 @@
 /* chash.h */
-#ifndef _CHASH_H_
-#define _CHASH_H_
+#ifndef DGRYSKI_LIBCHASH_CHASH_H
+#define DGRYSKI_LIBCHASH_CHASH_H
 
 struct chash_t;
 
@@ -12,4 +12,4 @@ void chash_lookup(struct chash_t *chash, const char *key, size_t len,
 
 void chash_free(struct chash_t *chash);
 
-#endif /* _CHASH_H_ */
+#endif /* DGRYSKI_LIBCHASH_CHASH_H */
