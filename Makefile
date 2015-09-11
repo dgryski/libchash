@@ -40,6 +40,10 @@ ifeq ("$(INCDIR)", "")
 INCDIR=$(PREFIX)/include
 endif
 
+ifneq ($(strip $(srcdir)),)
+   VPATH::=$(srcdir)
+endif
+
 default: library
 
 .c.o:
