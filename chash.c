@@ -65,7 +65,7 @@ static uint32_t leveldb_bloom_hash(unsigned char *b, size_t len)
     return h;
 }
 
-struct chash_t *chash_create(const char **node_names, size_t * name_lens,
+struct chash_t *chash_create(const char **node_names, size_t *name_lens,
 			     size_t num_names, size_t replicas)
 {
     struct chash_t *chash;
@@ -115,7 +115,7 @@ struct chash_t *chash_create(const char **node_names, size_t * name_lens,
 }
 
 void chash_lookup(struct chash_t *chash, const char *key, size_t len,
-		  const char **node_name, size_t * name_len)
+		  const char **node_name, size_t *name_len)
 {
     uint32_t point = leveldb_bloom_hash((unsigned char *) key, len);
 
@@ -135,7 +135,6 @@ void chash_lookup(struct chash_t *chash, const char *key, size_t len,
     if (low >= chash->nbuckets) {
 	low = 0;
     }
-
 
     node_idx = chash->blist[low].node_idx;
     *node_name = chash->node_names[node_idx];
