@@ -71,6 +71,11 @@ check: $(TEST_EXE)
 valgrind: $(TEST_EXE)
 	valgrind ./$(TEST_EXE)-static
 
+tidy:
+	indent -npro -kr -i4 -sob -l80 -ss -cs -cp1 \
+		-T size_t \
+		*.h *.c
+
 clean:
 	rm -f *.o *.a *.$(SHAREDEXT)  $(SO_NAME).* \
 		$(TEST_EXE)-static $(TEST_EXE)-dynamic

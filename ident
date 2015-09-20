@@ -1,4 +1,0 @@
-#!/bin/sh
-indent -npro -kr -i4 -sob -l80 -ss -cs -cp1 \
-	-T size_t \
-	"$@"
