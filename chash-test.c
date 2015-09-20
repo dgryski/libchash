@@ -55,5 +55,5 @@ int main()
 
     chash_free(chash);
 
-    return (!!warns || !!fails);
+    return (warns || fails) ? 1 : 0;
 }
