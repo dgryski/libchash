@@ -69,17 +69,30 @@ struct chash_t *chash_create(const char **node_names, size_t *name_lens,
 			     size_t num_names, size_t replicas)
 {
     struct chash_t *chash;
-
-    struct bucket_t *blist =
-	(struct bucket_t *) malloc(sizeof(bucket_t) * num_names * replicas);
-    char **nlist = (char **) malloc(sizeof(char *) * num_names);
-    size_t *lens = (size_t *) malloc(sizeof(size_t) * num_names);
+    struct bucket_t *blist;
+    char **nlist;
+    size_t *lens;
     size_t n, r, len, len1, len2, bidx = 0;
-
     char buffer[256];
+
+    blist = (struct bucket_t *) malloc(sizeof(bucket_t) * num_names * replicas);
+    if (blist == NULL) {
+	goto ERROR;
+    }
+    nlist = (char **) calloc(sizeof(char *), num_names);
+    if (nlist == NULL) {
+	goto ERROR;
+    }
+    lens = (size_t *) malloc(sizeof(size_t) * num_names);
+    if (lens == NULL) {
+	goto ERROR;
+    }
 
     for (n = 0; n < num_names; n++) {
 	nlist[n] = (char *) malloc(sizeof(char) * name_lens[n]);
+	if (nlist[n] == NULL) {
+	    goto ERROR;
+	}
 	lens[n] = name_lens[n];
 	memcpy(nlist[n], node_names[n], lens[n]);
 	for (r = 0; r < replicas; r++) {
@@ -105,6 +118,9 @@ struct chash_t *chash_create(const char **node_names, size_t *name_lens,
     qsort(blist, bidx, sizeof(struct bucket_t), cmpbucket);
 
     chash = malloc(sizeof(chash_t));
+    if (chash == NULL) {
+	goto ERROR;
+    }
     chash->blist = blist;
     chash->nbuckets = bidx;
     chash->node_names = nlist;
@@ -112,6 +128,23 @@ struct chash_t *chash_create(const char **node_names, size_t *name_lens,
     chash->num_names = num_names;
 
     return chash;
+
+  ERROR:
+    if (nlist != NULL) {
+	for (n = 0; n < num_names; n++) {
+	    if (nlist[n] != NULL) {
+		free(nlist[n]);
+	    }
+	}
+	free(nlist);
+    }
+    if (lens != NULL) {
+	free(lens);
+    }
+    if (blist != NULL) {
+	free(blist);
+    }
+    return NULL;
 }
 
 void chash_lookup(struct chash_t *chash, const char *key, size_t len,
