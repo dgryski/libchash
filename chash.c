@@ -72,26 +72,26 @@ struct chash_t *chash_create(const char **node_names, size_t *name_lens,
     struct bucket_t *blist;
     char **nlist;
     size_t *lens;
-    size_t n, r, len, len1, len2, bidx = 0;
+    size_t i, n, r, len, len1, len2, bidx = 0;
     char buffer[256];
 
     blist = (struct bucket_t *) malloc(sizeof(bucket_t) * num_names * replicas);
     if (blist == NULL) {
-	goto ERROR;
+	goto ERROR_BLIST;
     }
-    nlist = (char **) calloc(sizeof(char *), num_names);
+    nlist = (char **) malloc(sizeof(char *) * num_names);
     if (nlist == NULL) {
-	goto ERROR;
+	goto ERROR_NLIST;
     }
     lens = (size_t *) malloc(sizeof(size_t) * num_names);
     if (lens == NULL) {
-	goto ERROR;
+	goto ERROR_LENS;
     }
 
     for (n = 0; n < num_names; n++) {
 	nlist[n] = (char *) malloc(sizeof(char) * name_lens[n]);
 	if (nlist[n] == NULL) {
-	    goto ERROR;
+	    goto ERROR_NLIST_MEMBER;
 	}
 	lens[n] = name_lens[n];
 	memcpy(nlist[n], node_names[n], lens[n]);
@@ -119,7 +119,7 @@ struct chash_t *chash_create(const char **node_names, size_t *name_lens,
 
     chash = malloc(sizeof(chash_t));
     if (chash == NULL) {
-	goto ERROR;
+	goto ERROR_CHASH;
     }
     chash->blist = blist;
     chash->nbuckets = bidx;
@@ -129,21 +129,19 @@ struct chash_t *chash_create(const char **node_names, size_t *name_lens,
 
     return chash;
 
-  ERROR:
-    if (nlist != NULL) {
-	for (n = 0; n < num_names; n++) {
-	    if (nlist[n] != NULL) {
-		free(nlist[n]);
-	    }
-	}
-	free(nlist);
+  ERROR_CHASH:
+  ERROR_NLIST_MEMBER:
+    /* We know that nlist[n] is the first member not allocated,
+       thus free every nlist[i] up to n. */
+    for (i = 0; i < n; i++) {
+	free(nlist[n]);
     }
-    if (lens != NULL) {
-	free(lens);
-    }
-    if (blist != NULL) {
-	free(blist);
-    }
+    free(lens);
+  ERROR_LENS:
+    free(nlist);
+  ERROR_NLIST:
+    free(blist);
+  ERROR_BLIST:
     return NULL;
 }
 
