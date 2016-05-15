@@ -25,7 +25,8 @@ TEST_OBJ=chash-test.o
 TEST_EXE=chash-test
 
 CFLAGS += -Werror -Wall -Wextra -pedantic
-LDFLAGS += -L. -lchash
+LDFLAGS += -L.
+LDADD += -lchash
 CC=gcc
 
 ifeq ("$(PREFIX)", "")
@@ -62,7 +63,7 @@ library: $(SO_NAME) $(A_NAME)
 $(TEST_EXE): library
 	$(CC) -c $(INCLUDES) $(CFLAGS) $(TEST_SRC) -o $(TEST_OBJ)
 	$(CC) $(TEST_OBJ) $(A_NAME) -o $(TEST_EXE)-static
-	$(CC) $(TEST_OBJ) $(LDFLAGS) -o $(TEST_EXE)-dynamic
+	$(CC) $(TEST_OBJ) $(LDFLAGS) -o $(TEST_EXE)-dynamic $(LDADD)
 
 check: $(TEST_EXE)
 	./$(TEST_EXE)-static
