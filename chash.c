@@ -23,8 +23,8 @@ struct chash_t {
 
 static int cmpbucket(const void *a, const void *b)
 {
-    struct bucket_t *b1 = (struct bucket_t *) a;
-    struct bucket_t *b2 = (struct bucket_t *) b;
+    const struct bucket_t *b1 = (const struct bucket_t *) a;
+    const struct bucket_t *b2 = (const struct bucket_t *) b;
 
     if (b1->point < b2->point) {
 	return -1;
@@ -38,7 +38,7 @@ static int cmpbucket(const void *a, const void *b)
 }
 
 /* from leveldb, a murmur-lite */
-static uint32_t leveldb_bloom_hash(unsigned char *b, size_t len)
+static uint32_t leveldb_bloom_hash(const unsigned char *b, size_t len)
 {
     const uint32_t seed = 0xbc9f1d34;
     const uint32_t m = 0xc6a4a793;
@@ -110,7 +110,7 @@ struct chash_t *chash_create(const char **node_names, size_t *name_lens,
 		fprintf(stderr, "Node name truncated to: %s\n", buffer);
 	    }
 	    blist[bidx].point =
-		leveldb_bloom_hash((unsigned char *) buffer, len);
+		leveldb_bloom_hash((const unsigned char *) buffer, len);
 	    bidx++;
 	}
     }
@@ -148,7 +148,7 @@ struct chash_t *chash_create(const char **node_names, size_t *name_lens,
 void chash_lookup(struct chash_t *chash, const char *key, size_t len,
 		  const char **node_name, size_t *name_len)
 {
-    uint32_t point = leveldb_bloom_hash((unsigned char *) key, len);
+    uint32_t point = leveldb_bloom_hash((const unsigned char *) key, len);
 
     uint32_t low = 0, high = chash->nbuckets;
     uint32_t node_idx;
