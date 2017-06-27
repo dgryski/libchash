@@ -24,7 +24,7 @@ TEST_SRC=chash-test.c
 TEST_OBJ=chash-test.o
 TEST_EXE=chash-test
 
-CFLAGS += -Werror -Wall -Wextra -Werror=cast-qual -pedantic -fomit-frame-pointer -pipe
+CFLAGS += -Werror -Wall -Wextra -Werror=cast-qual -pedantic -pipe
 LDFLAGS += -L.
 LDADD += -lchash
 CC=gcc
