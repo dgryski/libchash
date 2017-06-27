@@ -24,7 +24,7 @@ TEST_SRC=chash-test.c
 TEST_OBJ=chash-test.o
 TEST_EXE=chash-test
 
-CFLAGS += -Werror -Wall -Wextra -Werror=cast-qual -pedantic
+CFLAGS += -Werror -Wall -Wextra -Werror=cast-qual -pedantic -fomit-frame-pointer -pipe
 LDFLAGS += -L.
 LDADD += -lchash
 CC=gcc
@@ -82,10 +82,10 @@ clean:
 		$(TEST_EXE)-static $(TEST_EXE)-dynamic
 
 install: library
-	 @echo "Installing libraries in $(LIBDIR)"; \
-	 mkdir -pv $(LIBDIR)/;\
-	 cp -pv $(A_NAME) $(LIBDIR)/;\
-	 cp -Rv $(SO_NAME)* $(LIBDIR)/;\
-	 echo "Installing headers in $(INCDIR)"; \
-	 mkdir -pv $(INCDIR)/;\
-	 cp -pv $(LIB_HDR) $(INCDIR)/;
+	 @echo "Installing libraries in $(LIBDIR)"
+	 @mkdir -pv $(LIBDIR)/
+	 @cp -pv $(A_NAME) $(LIBDIR)/
+	 @cp -Rv $(SO_NAME)* $(LIBDIR)/
+	 @echo "Installing headers in $(INCDIR)"
+	 @mkdir -pv $(INCDIR)/
+	 @cp -pv $(LIB_HDR) $(INCDIR)/
