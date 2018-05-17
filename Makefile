@@ -24,7 +24,12 @@ TEST_SRC=chash-test.c
 TEST_OBJ=chash-test.o
 TEST_EXE=chash-test
 
-CFLAGS += -Werror -Wall -Wextra -Werror=cast-qual -pedantic -pipe
+REBUCKET_TEST_SRC=chash-rebucket-test.c
+REBUCKET_TEST_OBJ=chash-rebucket-test.o
+REBUCKET_TEST_EXE=chash-rebucket-test
+
+CFLAGS += -Werror -Wall -Wextra -Werror=cast-qual -pedantic -pipe \
+ -Wno-error=implicit-fallthrough
 LDFLAGS += -L.
 LDADD += -lchash
 CC=gcc
@@ -65,9 +70,14 @@ $(TEST_EXE): library
 	$(CC) $(TEST_OBJ) $(A_NAME) -o $(TEST_EXE)-static
 	$(CC) $(TEST_OBJ) $(LDFLAGS) -o $(TEST_EXE)-dynamic $(LDADD)
 
-check: $(TEST_EXE)
+$(REBUCKET_TEST_EXE): library
+	$(CC) -c $(INCLUDES) $(CFLAGS) $(REBUCKET_TEST_SRC) -o $(TEST_OBJ)
+	$(CC) $(TEST_OBJ) $(A_NAME) -o $(REBUCKET_TEST_EXE)
+
+check: $(TEST_EXE) $(REBUCKET_TEST_EXE)
 	./$(TEST_EXE)-static
 	LD_LIBRARY_PATH=. ./$(TEST_EXE)-dynamic
+	./$(REBUCKET_TEST_EXE) 1 1000000
 
 valgrind: $(TEST_EXE)
 	valgrind ./$(TEST_EXE)-static
